@@ -1,0 +1,41 @@
+name: CI
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    name: Build the native module and run the Lua suite
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Install Rust 1.85 toolchain
+        uses: dtolnay/rust-toolchain@1.85
+      - name: Install Lua 5.4
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends lua5.4
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+      - name: Check the lockfile is up to date
+        run: cargo metadata --locked --format-version 1 > /dev/null
+      - name: Formatting (cargo fmt)
+        run: cargo fmt --all --check
+      - name: Static analysis (cargo clippy)
+        run: cargo clippy --all-targets -- -D warnings
+      - name: Build the native module
+        run: cargo build --release
+      - name: Run the Rust test suite
+        run: cargo test
+      - name: Run the Lua suite
+        env:
+          SCIENCEKIT_LUA_LIB: ${{ github.workspace }}/target/release/libsciencekit_lua.so
+        run: lua5.4 tests/run.lua
