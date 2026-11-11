@@ -20,9 +20,20 @@ jobs:
       - name: Install Rust 1.85 toolchain
         uses: dtolnay/rust-toolchain@1.85
       - name: Install Lua 5.4
-        uses: leafo/gh-actions-lua@v13
-        with:
-          luaVersion: "5.4"
+        # The module embeds Lua 5.4 (mlua `lua54` + `vendored`); this installs a
+        # system interpreter to run `tests/run.lua` against the built module. The
+        # source is compiled directly, so the job needs no package index.
+        run: |
+          curl -fsSL --retry 3 -o lua.tar.gz \
+            https://codeload.github.com/lua/lua/tar.gz/refs/tags/v5.4.8
+          tar xzf lua.tar.gz
+          cd lua-5.4.8
+          gcc -O2 -std=gnu99 -DLUA_USE_LINUX -o lua \
+            $(ls *.c | grep -v -E '^(luac|onelua)\.c$') -Wl,-E -ldl -lm
+          mkdir -p "$HOME/.local/bin"
+          install -m 0755 lua "$HOME/.local/bin/lua5.4"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          "$HOME/.local/bin/lua5.4" -v
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
       - name: Check the lockfile is up to date
@@ -38,4 +49,4 @@ jobs:
       - name: Run the Lua suite
         env:
           SCIENCEKIT_LUA_LIB: ${{ github.workspace }}/target/release/libsciencekit_lua.so
-        run: lua tests/run.lua
+        run: lua5.4 tests/run.lua
