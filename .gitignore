@@ -4,3 +4,6 @@
 # LuaRocks artifacts.
 *.rock
 *.src.rock
+
+# mdBook rendered output.
+/docs/book/
