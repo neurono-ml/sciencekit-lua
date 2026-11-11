@@ -2,7 +2,9 @@
 
 Lua 5.4 bindings for the [sciencekit](https://github.com/neurono-ml/sciencekit)
 machine-learning library. The crate builds a native Lua module named
-`sciencekit`, loaded with `require("sciencekit")`.
+`sciencekit`, loaded with `require("sciencekit")`. Full guides and API
+reference are published at
+**[neurono-ml.github.io/sciencekit-lua](https://neurono-ml.github.io/sciencekit-lua/)**.
 
 Lua 5.4 is **embedded**: the `mlua` dependency enables `lua54` + `vendored`,
 so the interpreter is compiled from source into the module. No system
