@@ -20,9 +20,9 @@ jobs:
       - name: Install Rust 1.85 toolchain
         uses: dtolnay/rust-toolchain@1.85
       - name: Install Lua 5.4
-        run: |
-          sudo apt-get update
-          sudo apt-get install --yes --no-install-recommends lua5.4
+        uses: leafo/gh-actions-lua@v13
+        with:
+          luaVersion: "5.4"
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
       - name: Check the lockfile is up to date
@@ -38,4 +38,4 @@ jobs:
       - name: Run the Lua suite
         env:
           SCIENCEKIT_LUA_LIB: ${{ github.workspace }}/target/release/libsciencekit_lua.so
-        run: lua5.4 tests/run.lua
+        run: lua tests/run.lua
