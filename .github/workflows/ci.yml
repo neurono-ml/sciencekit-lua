@@ -19,6 +19,8 @@ jobs:
           persist-credentials: false
       - name: Install Rust 1.85 toolchain
         uses: dtolnay/rust-toolchain@1.85
+        with:
+          components: rustfmt, clippy
       - name: Install Lua 5.4
         # The module embeds Lua 5.4 (mlua `lua54` + `vendored`); this installs a
         # system interpreter to run `tests/run.lua` against the built module. The
